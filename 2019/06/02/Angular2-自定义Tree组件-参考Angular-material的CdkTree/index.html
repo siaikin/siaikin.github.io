@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="为了方便, 本文所有的Angular均表示Angula2及以上版本，对于使用Angular1/Angular.js的读者可作为参考 前言目前正在写一个Angular的Markdown编辑器，需要一个树形组件来写文件系统。刚好之前用过Angular Material的树形组件，就想照着写一个。毕竟直接把Angular Material引进来会多出其他用不到的组件，而且自己实现还能更深入学习Angul">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)">
+<meta property="og:url" content="http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/index.html">
+<meta property="og:site_name" content="Siai Kin">
+<meta property="og:description" content="为了方便, 本文所有的Angular均表示Angula2及以上版本，对于使用Angular1/Angular.js的读者可作为参考 前言目前正在写一个Angular的Markdown编辑器，需要一个树形组件来写文件系统。刚好之前用过Angular Material的树形组件，就想照着写一个。毕竟直接把Angular Material引进来会多出其他用不到的组件，而且自己实现还能更深入学习Angul">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-02T13:45:03.535Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)">
+<meta name="twitter:description" content="为了方便, 本文所有的Angular均表示Angula2及以上版本，对于使用Angular1/Angular.js的读者可作为参考 前言目前正在写一个Angular的Markdown编辑器，需要一个树形组件来写文件系统。刚好之前用过Angular Material的树形组件，就想照着写一个。毕竟直接把Angular Material引进来会多出其他用不到的组件，而且自己实现还能更深入学习Angul">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/06/02/Markodwn-标题对齐的同步滚动/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&text=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&is_video=false&description=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)&body=Check out this article: http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&name=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">2.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">3.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概览"><span class="toc-number">4.</span> <span class="toc-text">概览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeComponent"><span class="toc-number">4.1.</span> <span class="toc-text">TreeComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeComponent"><span class="toc-number">4.2.</span> <span class="toc-text">TreeNodeComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeOutletDirective"><span class="toc-number">4.3.</span> <span class="toc-text">TreeNodeOutletDirective</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeDefDirective"><span class="toc-number">4.4.</span> <span class="toc-text">TreeNodeDefDirective</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现-1"><span class="toc-number">5.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结尾"><span class="toc-number">6.</span> <span class="toc-text">结尾</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Siai Kin</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-02T13:44:52.000Z" itemprop="datePublished">2019-06-02</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><strong>为了方便, 本文所有的<code>Angular</code>均表示Angula2及以上版本，对于使用<code>Angular1</code>/<code>Angular.js</code>的读者可作为参考</strong></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>目前正在写一个<code>Angular</code>的<code>Markdown</code>编辑器，需要一个树形组件来写文件系统。刚好之前用过<code>Angular Material</code>的<a href="https://material.angular.cn/cdk/tree/overview" target="_blank" rel="noopener">树形组件</a>，就想照着写一个。毕竟直接把<code>Angular Material</code>引进来会多出其他用不到的组件，而且自己实现还能更深入学习<code>Angular</code>。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在写之前我百度了一通，发现大部分文章的Tree组件实现都是把节点模板直接写在了组件里，类似下面</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--Tree组件--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tree</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tree-node</span>&gt;</span><span class="tag">&lt;/<span class="name">tree-node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tree</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--TreeNode组件--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tree-node</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--本节点内容--&gt;</span></span><br><span class="line">    &#123;&#123; nodeName &#125;&#125;</span><br><span class="line">    <span class="comment">&lt;!--子节点--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tree-node</span> *<span class="attr">ngIf</span>=<span class="string">"hasChildren"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tree-node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tree-node</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>说明一下: <code>Tree</code>组件里面包含<code>TreeNode</code>组件，<code>TreeNode</code>组件内部实现了递归子节点的逻辑。<br>其实这样的结构已经足够满足我的需求了，但是（因为强迫症）这样的可重用性几乎是没有，因为节点的内容已经写死在<code>TreeNode</code>组件里了。<br>然后我想到了<code>Angular Material</code>的<code>CdkTree</code>。他的结构如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tree</span> <span class="attr">dataSource</span>=<span class="string">"ds"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tree-node</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--本节点内容--&gt;</span></span><br><span class="line">        &#123;&#123; nodeName &#125;&#125;</span><br><span class="line">        <span class="comment">&lt;!--子节点出口--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">outlet</span>&gt;</span><span class="tag">&lt;/<span class="name">outlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tree-node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tree</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>说明: 简单的说就是<code>CdkTree</code>把<code>&lt;tree-node&gt;</code>里的内容作为一个模板保存起来，然后根据数据源递归渲染出来。这样我们就可以在不修改<code>Tree</code>和<code>TreeNode</code>组件前提下改变其内容。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>在实现之前需要理解<code>Angular</code>的几个装饰器，学过<code>Angular</code>的应该都不会陌生。</p>
+<ul>
+<li><code>@ViewChild</code>          - 在视图中查询匹配的第一个元素</li>
+<li><code>@ViewChildren</code>       - 在视图中查询匹配的所有元素</li>
+<li><code>@ContentChild</code>       - 在组件标签包裹的内容中查询匹配的第一个元素</li>
+<li><code>@ContentChildren</code>    - 在组件标签包裹的内容中查询匹配的所有元素</li>
+</ul>
+<p><strong>View和Content的区别</strong><br>View: 在组件的模板中定义的内容，即我们手动写在xxx.component.html里的内容<br>Content: 在<code>Host</code>元素的<code>&lt;opening&gt;</code>和<code>&lt;closeing&gt;</code>标签中的内容</p>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>在Tree组件中有四个比较重要的类</p>
+<ul>
+<li><code>@Component: TreeComponent</code></li>
+<li><code>@Component: TreeNodeComponent</code></li>
+<li><code>@Directive: TreeNodeOutletDirective</code></li>
+<li><code>@Directive: TreeNodeDefDirective</code></li>
+</ul>
+<h3 id="TreeComponent"><a href="#TreeComponent" class="headerlink" title="TreeComponent"></a>TreeComponent</h3><p>该组件就是我们要是实现的<code>Tree</code>组件，用于包裹<code>TreeNode</code></p>
+<h3 id="TreeNodeComponent"><a href="#TreeNodeComponent" class="headerlink" title="TreeNodeComponent"></a>TreeNodeComponent</h3><p>树节点组件，我们自定义的模板就写在这里面</p>
+<h3 id="TreeNodeOutletDirective"><a href="#TreeNodeOutletDirective" class="headerlink" title="TreeNodeOutletDirective"></a>TreeNodeOutletDirective</h3><p>这个指令设置了子节点的出口位置</p>
+<h3 id="TreeNodeDefDirective"><a href="#TreeNodeDefDirective" class="headerlink" title="TreeNodeDefDirective"></a>TreeNodeDefDirective</h3><p>这个指令用来定义树节点所需的数据，即我们使用这个指令让模板可以使用每个树节点对应的数据</p>
+<h2 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h2><p>我们先看一下完成后的样子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">nb-tree</span> [<span class="attr">dataSource</span>]=<span class="string">"fileTree"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">nb-tree-node</span> *<span class="attr">nbTreeNodeDef</span>=<span class="string">"let data = data"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#123;&#123; data.title &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ng-container</span> <span class="attr">nbTreeNodeOutlet</span>&gt;</span><span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">nb-tree-node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nb-tree</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>（标签前面的nb请忽略，这只是默认的前缀）上面是完成后的简易版。<br>我们可以看到在<code>tree</code>组件上设置了<code>dataSource</code>。</p>
+<p>然后在<code>treeNodeDef</code>指令中我们导出了数据对象<code>data</code>。然后在模板中使用了它<code>&lt;span&gt;&lt;/span&gt;</code>。</p>
+<p>最后我们在<code>&lt;ng-container&gt;</code>上用<code>treeNodeOutlet</code>指令设置了子节点的出口。<br>懒得详细写实习了。。。有空再写吧。本文主要提供一个通用树形组件的思路。</p>
+<p>想看代码的，看结尾。有一个不是很完善的<code>tree</code>组件，我用在正在写的Markdown编辑器上了。</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>Github: <a href="https://github.com/abc1310054026/ngr2-markdown/tree/master/projects/ngr2-markdown/src/lib/tree" target="_blank" rel="noopener"><code>tree</code>组件链接</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">2.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">3.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概览"><span class="toc-number">4.</span> <span class="toc-text">概览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeComponent"><span class="toc-number">4.1.</span> <span class="toc-text">TreeComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeComponent"><span class="toc-number">4.2.</span> <span class="toc-text">TreeNodeComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeOutletDirective"><span class="toc-number">4.3.</span> <span class="toc-text">TreeNodeOutletDirective</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeNodeDefDirective"><span class="toc-number">4.4.</span> <span class="toc-text">TreeNodeDefDirective</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现-1"><span class="toc-number">5.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结尾"><span class="toc-number">6.</span> <span class="toc-text">结尾</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&text=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&is_video=false&description=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)&body=Check out this article: http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&title=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/Angular2-自定义Tree组件-参考Angular-material的CdkTree/&name=Angular2+ 自定义Tree组件(参考Angular-material的CdkTree)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 siaikin
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

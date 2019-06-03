@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="HTML逆向解析生成Markdown —— 之一解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML逆向解析生成Markdown —— 之一">
+<meta property="og:url" content="http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/index.html">
+<meta property="og:site_name" content="Siai Kin">
+<meta property="og:description" content="HTML逆向解析生成Markdown —— 之一解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;s">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/7659/anatomy-of-an-html-element.png">
+<meta property="og:updated_time" content="2019-06-02T13:42:21.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML逆向解析生成Markdown —— 之一">
+<meta name="twitter:description" content="HTML逆向解析生成Markdown —— 之一解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;s">
+<meta name="twitter:image" content="https://mdn.mozillademos.org/files/7659/anatomy-of-an-html-element.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>HTML逆向解析生成Markdown —— 之一</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/06/02/前端随笔——Form的原生部件/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&text=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&is_video=false&description=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HTML逆向解析生成Markdown —— 之一&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&name=HTML逆向解析生成Markdown —— 之一&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML逆向解析生成Markdown-——-之一"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向解析生成Markdown —— 之一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟DOM节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单，大部分是字符串处理。"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，大部分是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        HTML逆向解析生成Markdown —— 之一
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Siai Kin</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-02T13:38:25.000Z" itemprop="datePublished">2019-06-02</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="HTML逆向解析生成Markdown-——-之一"><a href="#HTML逆向解析生成Markdown-——-之一" class="headerlink" title="HTML逆向解析生成Markdown —— 之一"></a>HTML逆向解析生成Markdown —— 之一</h1><p>解析过程分为四个阶段。以下是各个阶段的简要说明。</p>
+<ol>
+<li>分词：将HTML原始文本分割为HTML标签</li>
+<li>生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点</li>
+<li>构建虚拟DOM树：将节点根据其顺序生成相应的DOM树</li>
+<li>生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">st=&gt;start: 源HTML文本</span><br><span class="line">lexer=&gt;operation: 分词</span><br><span class="line">parser=&gt;operation: 生成虚拟DOM节点</span><br><span class="line">filter=&gt;inputoutput: 过滤无效节点</span><br><span class="line">vdomt=&gt;operation: 构建虚拟DOM树</span><br><span class="line">filterAgain=&gt;inputoutput: 根据转换规则再次过滤节点</span><br><span class="line">md=&gt;operation: 生成Markdown文本</span><br><span class="line">ed=&gt;end: 输出Markdown文本</span><br><span class="line"></span><br><span class="line">st(right)-&gt;lexer-&gt;parser-&gt;filter-&gt;vdomt-&gt;filterAgain-&gt;md(right)-&gt;ed</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>下面这段HTML文本将作为解析的样例文本：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h2</span> <span class="attr">id</span>=<span class="string">"逆向解析HTMl"</span>&gt;</span>逆向解析HTMl<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"https://www.baidu.com"</span> <span class="attr">rel</span>=<span class="string">"nofollow"</span> <span class="attr">target</span>=<span class="string">"_blank"</span>&gt;</span>Markdown<span class="tag">&lt;/<span class="name">a</span>&gt;</span>解析过程分为四个阶段<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span>分词<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span>生成虚拟DOM节点<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span>构建虚拟DOM树<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span>生成Markdown文本<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="分词"><a href="#分词" class="headerlink" title="分词"></a>分词</h2><p>我们将源HTML文本按照<a href="https://developer.mozilla.org/zh-CN/docs/Glossary/HTML" target="_blank" rel="noopener">HTML元素的语法</a>，分解为<code>Opening tag</code> <code>Closing tag</code> <code>Enclosed text content</code>。
+<img src="https://mdn.mozillademos.org/files/7659/anatomy-of-an-html-element.png" alt></p>
+<p>因为HTML元素内部很可能还有嵌套的元素，所以还要继续分割<code>Enclosed text content</code>直到只剩下<code>文字文本</code>。</p>
+<p>从上图来看很明显，<code>Opening tag</code>和<code>Closing tag</code>都是由<code>&lt;</code> <code>&gt;</code>这两个符号包裹的，那我们只需要对愿HTML文本进行一次搜索，将被<code>&lt;</code> <code>&gt;</code>包裹起来的字符串提取出来，放入一个数组中。搜索结束后数组就是我们分词的结果。<br>原始文本经过分割后，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = [</span><br><span class="line">  <span class="string">'&lt;h2 id="逆向解析HTMl"&gt;'</span>,</span><br><span class="line">  <span class="string">'逆向解析HTMl'</span>,</span><br><span class="line">  <span class="string">'&lt;/h2&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;p&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;a href="https://www.baidu.com" rel="nofollow" target="_blank"&gt;'</span>,</span><br><span class="line">  <span class="string">'Markdown'</span>,</span><br><span class="line">  <span class="string">'&lt;/a&gt;'</span>,</span><br><span class="line">  <span class="string">'解析过程分为四个阶段'</span>,</span><br><span class="line">  <span class="string">'&lt;/p&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;ul&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;li&gt;'</span>,</span><br><span class="line">  <span class="string">'分词'</span>,</span><br><span class="line">  <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;li&gt;'</span>,</span><br><span class="line">  <span class="string">'生成虚拟DOM节点'</span>,</span><br><span class="line">  <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;li&gt;'</span>,</span><br><span class="line">  <span class="string">'构建虚拟DOM树'</span>,</span><br><span class="line">  <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;li&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;p&gt;'</span>,</span><br><span class="line">  <span class="string">'生成Markdown文本'</span>,</span><br><span class="line">  <span class="string">'&lt;/p&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line">  <span class="string">'&lt;/ul&gt;'</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p><strong>需要注意的是，html标签中的属性值是允许出现<code>&lt;</code>和<code>&gt;</code>这两个符号的</strong>，也就是说会出现类似<code>&lt;div data-demo=&quot;&lt;demo&gt;asd&lt;/demo&gt;&quot;&gt;</code>这样的文本。<br>这里要注意的是不能直接从头到尾搜索<code>&lt;</code> <code>&gt;</code>然后提取里面的字符串，不然会出现提取到<code>&lt;div data-demo=&quot;&lt;demo&gt;</code>这样的结果。</p>
+<h5 id="我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。"><a href="#我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。" class="headerlink" title="我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。"></a>我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</h5><ol>
+<li>首先从下标0开始，遍历字符串</li>
+<li><ol>
+<li>如果当前的字符是<code>&lt;</code>，则将其压入栈中。</li>
+<li>如果当前的字符是<code>&gt;</code>，且栈顶是<code>&lt;</code>，则表示一个HTML标签的结束。<br>然后将开始符号<code>&lt;</code>和结束符号<code>&gt;</code>之间的字符串提取出来保存到结果数组就好了。</li>
+<li>如果当前的字符是<code>&quot;</code>，且栈顶不是<code>&quot;</code>，则将其压入栈中。</li>
+<li>如果当前的字符是<code>&quot;</code>，且栈顶是<code>&quot;</code>，则将栈顶元素弹出。</li>
+</ol>
+</li>
+</ol>
+<p>具体实现见<a href="../src/lib/lexer.js">lexer.js</a></p>
+<h2 id="生成虚拟DOM节点"><a href="#生成虚拟DOM节点" class="headerlink" title="生成虚拟DOM节点"></a>生成虚拟DOM节点</h2><p>在这一阶段，主要要对节点的属性的过滤，HTML标签内部的大部分属性都是不需要的。除了<code>a</code> <code>img</code>等几个HTML元素。<br>得到分词后的结果之后，就可以解析HTML标签字符串生成一个个包含HTML标签信息的对象。<br>对象类型如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">    <span class="comment">// 固定属性</span></span><br><span class="line">    tag,            <span class="comment">// HTML标签名。如`div`, `span`</span></span><br><span class="line">    type,           <span class="comment">// 自定义的HTML标签名所对应的数字。</span></span><br><span class="line">    position,       <span class="comment">// 标签所在的位置。开始标签（Opening tag）：1，结束标签（Closing tag）：2，空元素（empty tag）和文本节点（text node）：3</span></span><br><span class="line">    <span class="comment">// 可选属性</span></span><br><span class="line">    attr,           <span class="comment">// 标签内属性的键值对，这是一个对象。一些需要保留属性的元素如`a`元素需要保留`href` `title`用来生成Markdown文本。</span></span><br><span class="line">    content         <span class="comment">// 文本节点特有，用来保存文本</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一过程得到的结果如下（有点多，这里只截取前6个比较有代表性的）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = [</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'h2'</span>,</span><br><span class="line">        type: <span class="number">42</span>,           <span class="comment">// 不要在意`type`属性，这是自定义的，42代表`h2`元素对应数字</span></span><br><span class="line">        position: <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'textNode'</span>,</span><br><span class="line">        type: <span class="number">1</span>,</span><br><span class="line">        position: <span class="number">3</span>,</span><br><span class="line">        content: <span class="string">'逆向解析HTMl'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'h2'</span>,</span><br><span class="line">        type: <span class="number">42</span>,</span><br><span class="line">        position: <span class="number">2</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'p'</span>,</span><br><span class="line">        type: <span class="number">6</span>,</span><br><span class="line">        position: <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'a'</span>,</span><br><span class="line">        type: <span class="number">2</span>,</span><br><span class="line">        position: <span class="number">1</span>,</span><br><span class="line">        attr: &#123;</span><br><span class="line">            href: <span class="string">'https://www.baidu.com'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'textNode'</span>,</span><br><span class="line">        type: <span class="number">1</span>,</span><br><span class="line">        position: <span class="number">3</span>,</span><br><span class="line">        content: <span class="string">'Markdown'</span></span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h5 id="这部分的实现思路也比较简单，大部分是字符串处理。"><a href="#这部分的实现思路也比较简单，大部分是字符串处理。" class="headerlink" title="这部分的实现思路也比较简单，大部分是字符串处理。"></a>这部分的实现思路也比较简单，大部分是字符串处理。</h5><ol>
+<li><p><code>tag</code>：HTML标签的结构很简单，大致就以下几种：（最后一种不需要处理，可以忽略）</p>
+<ol>
+<li><code>&lt;tagName attrKey=&quot;attrValue&quot; attrKey&gt;</code> <code>&lt;tagName attrKey=&quot;attrValue&quot; attrKey &gt;</code></li>
+<li><code>&lt;tagName/&gt;</code> <code>&lt;tagName /&gt;</code></li>
+<li><code>&lt;/tagName&gt;</code></li>
+</ol>
+<p>很容易发现要想得到tagName只需要找到在<code>&lt;</code>和（<code>空格</code>或<code>/</code>）之间的字符串就可以了。</p>
+</li>
+<li><p><code>type</code>：这个属性是为了方便之后的类型处理添加的，毕竟数字相对字符串来说更好处理。</p>
+<p>我在配置文件里写了一个映射表（<a href="../src/lib/nwodkramConfig.js">配置文件</a>），以<code>tag</code>作为key对应数字作为value。这样就能很方便的对应起来。</p>
+</li>
+<li><p><code>position</code>：这个属性虽然叫<code>position</code>，其实<code>type</code>才更适合它，因为它标识了开始标签（Opening tag）：1，结束标签（Closing tag）：2，空元素（empty tag）和文本节点（text node）：3</p>
+<p><code>position</code>的判断我写的比较简单，只考虑到了上文<code>tag</code>所列的几种情况（但也已经能包括大部分情况了）。从上面那几种情况来说。<br>只要判断<code>tag</code>开始位置的下标索引是/不是<code>1</code>，就能知道是/不是Opening tag了。</p>
+<p>关于文本节点的判断：文本节点是没有<code>tag</code>的，如果无法搜索到<code>tag</code>，就可以将节点标识为文本节点。</p>
+</li>
+<li><p><code>attr</code>：<code>attr</code>里面保存着解析成Markdown文本所需要的一些属性。大多数情况是和链接相关的，比如以下几种：</p>
+<ol>
+<li>Markdown规范中的与链接有关的语法（<code>Links</code> <code>Images</code> <code>Heading IDs</code> <code>Footnotes</code>）。<ol>
+<li><code>Links</code>：<code>src</code> <code>title</code></li>
+<li><code>Image</code>: <code>src</code> <code>title</code> <code>alt</code></li>
+<li><code>Heading IDs</code>：<code>id</code></li>
+<li><code>Footnotes</code>：<code>id</code></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p><code>content</code>：文本节点不多说了。</p>
+</li>
+</ol>
+<p>具体实现见<a href="../src/lib/parser.js">parser.js</a></p>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p>反向解析要详细讲比较繁琐，这是第一部分，预计分三章讲完。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#HTML逆向解析生成Markdown-——-之一"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向解析生成Markdown —— 之一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟DOM节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单，大部分是字符串处理。"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，大部分是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&text=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&is_video=false&description=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HTML逆向解析生成Markdown —— 之一&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&name=HTML逆向解析生成Markdown —— 之一&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 siaikin
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
