@@ -458,7 +458,7 @@ body {
   font-display: swap;
   font-weight: 400;
   font-size: 14px;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Menlo", "Meslo LG", "微软雅黑", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
   flex: 1;
@@ -1439,7 +1439,7 @@ pre {
   border: 1px dotted #666;
   border-radius: 4px;
   font-size: 13px;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Menlo", "Meslo LG", "微软雅黑", monospace;
   line-height: 22px;
   -webkit-border-radius: 4px;
 }
@@ -1449,9 +1449,13 @@ pre code {
   border: none;
 }
 code {
+  color: #2bbc8a;
   padding: 0 5px;
-  border: 1px dotted #666;
+  margin: 0 5px;
+  background-color: rgba(43,188,138,0.1);
   border-radius: 2px;
+  font-size: 13px;
+  font-family: "Menlo", "Meslo LG", "微软雅黑", monospace;
   -webkit-border-radius: 2px;
 }
 .highlight {
@@ -1460,7 +1464,7 @@ code {
   padding: 10px 15px;
   border-radius: 4px;
   background: #fafafa;
-  font-family: "Menlo", "Meslo LG", monospace;
+  font-family: "Menlo", "Meslo LG", "微软雅黑", monospace;
   -webkit-border-radius: 4px;
 }
 .highlight figcaption {
