@@ -6,19 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="HTML逆向解析生成Markdown —— 之一 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;">
+    <meta name="description" content="HTML逆向生成Markdown -- Part 1 之前想做一个能够提取网页中文章并转换为Markdown格式的Chrome插件，所以才有了这个项目。 结果我低估了解析的难度，花了十几天才做出来一个半成品。遂放弃，记录下实现的思路，等以后水平提升了再来完善。 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签">
 <meta name="keywords" content="研究,Markdown,Markdown解析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HTML逆向解析生成Markdown —— 之一">
-<meta property="og:url" content="http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/index.html">
+<meta property="og:title" content="HTML逆向生成Markdown -- Part 1">
+<meta property="og:url" content="http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/index.html">
 <meta property="og:site_name" content="Siai Kin">
-<meta property="og:description" content="HTML逆向解析生成Markdown —— 之一 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;">
+<meta property="og:description" content="HTML逆向生成Markdown -- Part 1 之前想做一个能够提取网页中文章并转换为Markdown格式的Chrome插件，所以才有了这个项目。 结果我低估了解析的难度，花了十几天才做出来一个半成品。遂放弃，记录下实现的思路，等以后水平提升了再来完善。 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://mdn.mozillademos.org/files/7659/anatomy-of-an-html-element.png">
-<meta property="og:updated_time" content="2019-07-24T06:06:35.549Z">
+<meta property="og:updated_time" content="2019-07-25T03:22:52.823Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HTML逆向解析生成Markdown —— 之一">
-<meta name="twitter:description" content="HTML逆向解析生成Markdown —— 之一 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点 构建虚拟DOM树：将节点根据其顺序生成相应的DOM树 生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换  12345678910st=&amp;gt;">
+<meta name="twitter:title" content="HTML逆向生成Markdown -- Part 1">
+<meta name="twitter:description" content="HTML逆向生成Markdown -- Part 1 之前想做一个能够提取网页中文章并转换为Markdown格式的Chrome插件，所以才有了这个项目。 结果我低估了解析的难度，花了十几天才做出来一个半成品。遂放弃，记录下实现的思路，等以后水平提升了再来完善。 解析过程分为四个阶段。以下是各个阶段的简要说明。  分词：将HTML原始文本分割为HTML标签 生成虚拟DOM节点：将分割后的HTML标签">
 <meta name="twitter:image" content="https://mdn.mozillademos.org/files/7659/anatomy-of-an-html-element.png">
     
     
@@ -39,7 +39,7 @@
         
     
     <!-- title -->
-    <title>HTML逆向解析生成Markdown —— 之一</title>
+    <title>HTML逆向生成Markdown -- Part 1</title>
     <!-- styles -->
     <link rel="stylesheet" href="/css/style.css">
     <!-- persian styles -->
@@ -93,21 +93,21 @@
     <br>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&text=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&is_video=false&description=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=HTML逆向解析生成Markdown —— 之一&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&name=HTML逆向解析生成Markdown —— 之一&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&text=HTML逆向生成Markdown -- Part 1"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&is_video=false&description=HTML逆向生成Markdown -- Part 1"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HTML逆向生成Markdown -- Part 1&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&name=HTML逆向生成Markdown -- Part 1&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向解析生成Markdown —— 之一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单-是利用栈来判断html标签的开始和结束"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟dom节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单-大部分是字符串处理"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，大部分是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向生成Markdown -- Part 1</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单-是利用栈来判断html标签的开始和结束"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟dom节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单-基本上都是字符串处理"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，基本上都是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
     </div>
   </span>
 </div>
@@ -119,7 +119,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        HTML逆向解析生成Markdown —— 之一
+        HTML逆向生成Markdown -- Part 1
     </h1>
 
 
@@ -156,13 +156,15 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1>HTML逆向解析生成Markdown —— 之一</h1>
+    <h1>HTML逆向生成Markdown -- Part 1</h1>
+<p>之前想做一个能够提取网页中文章并转换为Markdown格式的Chrome插件，所以才有了这个项目。
+结果我低估了解析的难度，花了十几天才做出来一个半成品。遂放弃，记录下实现的思路，等以后水平提升了再来完善。</p>
 <p>解析过程分为四个阶段。以下是各个阶段的简要说明。</p>
 <ol>
 <li>分词：将HTML原始文本分割为HTML标签</li>
 <li>生成虚拟DOM节点：将分割后的HTML标签转换成对应的节点</li>
 <li>构建虚拟DOM树：将节点根据其顺序生成相应的DOM树</li>
-<li>生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换</li>
+<li>生成Markdown文本：根据预先定义HTML To Markdown的转换规则，对DOM树进行转换。我参考的<a href="https://www.markdownguide.org/" target="_blank" rel="noopener">转换规则</a></li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">st=&gt;start: 源HTML文本</span><br><span class="line">lexer=&gt;operation: 分词</span><br><span class="line">parser=&gt;operation: 生成虚拟DOM节点</span><br><span class="line">filter=&gt;inputoutput: 过滤无效节点</span><br><span class="line">vdomt=&gt;operation: 构建虚拟DOM树</span><br><span class="line">filterAgain=&gt;inputoutput: 根据转换规则再次过滤节点</span><br><span class="line">md=&gt;operation: 生成Markdown文本</span><br><span class="line">ed=&gt;end: 输出Markdown文本</span><br><span class="line"></span><br><span class="line">st(right)-&gt;lexer-&gt;parser-&gt;filter-&gt;vdomt-&gt;filterAgain-&gt;md(right)-&gt;ed</span><br></pre></td></tr></table></figure>
 <p><strong>下面这段HTML文本将作为解析的样例文本：</strong></p>
@@ -197,14 +199,14 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">    <span class="comment">// 固定属性</span></span><br><span class="line">    tag,            <span class="comment">// HTML标签名。如`div`, `span`</span></span><br><span class="line">    type,           <span class="comment">// 自定义的HTML标签名所对应的数字。</span></span><br><span class="line">    position,       <span class="comment">// 标签所在的位置。开始标签（Opening tag）：1，结束标签（Closing tag）：2，空元素（empty tag）和文本节点（text node）：3</span></span><br><span class="line">    <span class="comment">// 可选属性</span></span><br><span class="line">    attr,           <span class="comment">// 标签内属性的键值对，这是一个对象。一些需要保留属性的元素如`a`元素需要保留`href` `title`用来生成Markdown文本。</span></span><br><span class="line">    content         <span class="comment">// 文本节点特有，用来保存文本</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这一过程得到的结果如下（有点多，这里只截取前6个比较有代表性的）：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = [</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'h2'</span>,</span><br><span class="line">        type: <span class="number">42</span>,           <span class="comment">// 不要在意`type`属性，这是自定义的，42代表`h2`元素对应数字</span></span><br><span class="line">        position: <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'textNode'</span>,</span><br><span class="line">        type: <span class="number">1</span>,</span><br><span class="line">        position: <span class="number">3</span>,</span><br><span class="line">        content: <span class="string">'逆向解析HTMl'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'h2'</span>,</span><br><span class="line">        type: <span class="number">42</span>,</span><br><span class="line">        position: <span class="number">2</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'p'</span>,</span><br><span class="line">        type: <span class="number">6</span>,</span><br><span class="line">        position: <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'a'</span>,</span><br><span class="line">        type: <span class="number">2</span>,</span><br><span class="line">        position: <span class="number">1</span>,</span><br><span class="line">        attr: &#123;</span><br><span class="line">            href: <span class="string">'https://www.baidu.com'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        tag: <span class="string">'textNode'</span>,</span><br><span class="line">        type: <span class="number">1</span>,</span><br><span class="line">        position: <span class="number">3</span>,</span><br><span class="line">        content: <span class="string">'Markdown'</span></span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-<h5 id="这部分的实现思路也比较简单-大部分是字符串处理">这部分的实现思路也比较简单，大部分是字符串处理。</h5>
+<h5 id="这部分的实现思路也比较简单-基本上都是字符串处理">这部分的实现思路也比较简单，基本上都是字符串处理。</h5>
 <ol>
 <li>
 <p><code>tag</code>：HTML标签的结构很简单，大致就以下几种：（最后一种不需要处理，可以忽略）</p>
 <ol>
 <li><code>&lt;tagName attrKey=&quot;attrValue&quot; attrKey&gt;</code> <code>&lt;tagName attrKey=&quot;attrValue&quot; attrKey &gt;</code></li>
 <li><code>&lt;tagName/&gt;</code> <code>&lt;tagName /&gt;</code></li>
-<li><code>&lt;/tagName&gt;</code></li>
+<li><code>&lt;/tagName&gt;</code> （忽略）</li>
 </ol>
 <p>很容易发现要想得到tagName只需要找到在<code>&lt;</code>和（<code>空格</code>或<code>/</code>）之间的字符串就可以了。</p>
 </li>
@@ -219,7 +221,7 @@
 <p>关于文本节点的判断：文本节点是没有<code>tag</code>的，如果无法搜索到<code>tag</code>，就可以将节点标识为文本节点。</p>
 </li>
 <li>
-<p><code>attr</code>：<code>attr</code>里面保存着解析成Markdown文本所需要的一些属性。大多数情况是和链接相关的，比如以下几种：</p>
+<p><code>attr</code>：<code>attr</code>里面保存着解析成Markdown文本所需要的一些属性。得益于Markdown语法的简洁，HTML标签大部分的属性都是可以忽略的。基本上只需要<code>src</code>，<code>title</code>，<code>alt</code>，<code>id</code>这几种，下面是相对应的语法：</p>
 <ol>
 <li>Markdown规范中的与链接有关的语法（<code>Links</code> <code>Images</code> <code>Heading IDs</code> <code>Footnotes</code>）。
 <ol>
@@ -232,7 +234,7 @@
 </ol>
 </li>
 <li>
-<p><code>content</code>：文本节点不多说了。</p>
+<p><code>content</code>：是文本节点独有的属性，表示文本节点的内容。</p>
 </li>
 </ol>
 <p>具体实现见<a href="../src/lib/parser.js">parser.js</a></p>
@@ -267,21 +269,21 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向解析生成Markdown —— 之一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单-是利用栈来判断html标签的开始和结束"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟dom节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单-大部分是字符串处理"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，大部分是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">HTML逆向生成Markdown -- Part 1</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分词"><span class="toc-number">1.1.</span> <span class="toc-text">分词</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#我实现的方法比较简单-是利用栈来判断html标签的开始和结束"><span class="toc-number">1.1.0.0.1.</span> <span class="toc-text">我实现的方法比较简单，是利用栈来判断HTML标签的开始和结束。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#生成虚拟dom节点"><span class="toc-number">1.2.</span> <span class="toc-text">生成虚拟DOM节点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#这部分的实现思路也比较简单-基本上都是字符串处理"><span class="toc-number">1.2.0.0.1.</span> <span class="toc-text">这部分的实现思路也比较简单，基本上都是字符串处理。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">1.3.</span> <span class="toc-text">结束</span></a></li>
     </div>
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&text=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&is_video=false&description=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=HTML逆向解析生成Markdown —— 之一&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&title=HTML逆向解析生成Markdown —— 之一"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向解析生成Markdown-——-之一/&name=HTML逆向解析生成Markdown —— 之一&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&text=HTML逆向生成Markdown -- Part 1"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&is_video=false&description=HTML逆向生成Markdown -- Part 1"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HTML逆向生成Markdown -- Part 1&body=Check out this article: http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&title=HTML逆向生成Markdown -- Part 1"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/06/02/HTML逆向生成Markdown-Part-1/&name=HTML逆向生成Markdown -- Part 1&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
