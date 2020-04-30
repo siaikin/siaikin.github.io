@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="原文地址 如果你更喜欢看视频，Philip Roberts 有一个视频《great talk at JSConf on the event loop - microtasks aren&apos;t covered》。 尝试一下 下面有一些JavaScript代码： 12345678910111213console.log(&apos;script start&apos;);setTimeout(function() &amp;#12">
+<meta name="keywords" content="深入理解JS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="宏任务，微任务，队列和schedules （翻译）">
+<meta property="og:url" content="http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/index.html">
+<meta property="og:site_name" content="Siai Kin">
+<meta property="og:description" content="原文地址 如果你更喜欢看视频，Philip Roberts 有一个视频《great talk at JSConf on the event loop - microtasks aren&apos;t covered》。 尝试一下 下面有一些JavaScript代码： 12345678910111213console.log(&apos;script start&apos;);setTimeout(function() &amp;#12">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-25T09:00:59.210Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="宏任务，微任务，队列和schedules （翻译）">
+<meta name="twitter:description" content="原文地址 如果你更喜欢看视频，Philip Roberts 有一个视频《great talk at JSConf on the event loop - microtasks aren&apos;t covered》。 尝试一下 下面有一些JavaScript代码： 12345678910111213console.log(&apos;script start&apos;);setTimeout(function() &amp;#12">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>宏任务，微任务，队列和schedules （翻译）</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/09/27/WebRTC重新协商会导致sdp增大/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/08/25/canvasDragDrop/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&text=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&is_video=false&description=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=宏任务，微任务，队列和schedules （翻译）&body=Check out this article: http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&name=宏任务，微任务，队列和schedules （翻译）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试一下"><span class="toc-number">1.</span> <span class="toc-text">尝试一下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#这为什么会发生"><span class="toc-number">2.</span> <span class="toc-text">这为什么会发生</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#不同地浏览器地行为有何不同？"><span class="toc-number">2.1.</span> <span class="toc-text">不同地浏览器地行为有何不同？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何判断某些东西使用的是任务还是微任务"><span class="toc-number">3.</span> <span class="toc-text">如何判断某些东西使用的是任务还是微任务</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        宏任务，微任务，队列和schedules （翻译）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Siai Kin</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-09-02T09:28:45.000Z" itemprop="datePublished">2019-09-02</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/深入理解JS/">深入理解JS</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/深入理解JS/">深入理解JS</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">原文地址</a></p>
+<p>如果你更喜欢看视频，<a href="https://twitter.com/philip_roberts" target="_blank" rel="noopener">Philip Roberts</a> 有一个视频《<a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ" target="_blank" rel="noopener">great talk at JSConf on the event loop</a> - microtasks aren't covered》。</p>
+<h2 id="尝试一下">尝试一下</h2>
+<p>下面有一些JavaScript代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'script start'</span>);</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'setTimeout'</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.resolve().then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'promise1'</span>);</span><br><span class="line">&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'promise2'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'script end'</span>);</span><br></pre></td></tr></table></figure>
+<p>请问打印的日志会以什么顺序出现？</p>
+<p>正确的答案：<code>script start</code>，<code>script end</code>, <code>promise1</code>, <code>promise2</code>, <code>setTimerout</code>，但是并不是所有的浏览器都会有同样的行为。</p>
+<p>Microsoft Edge, Firefox 40, iOS Safari和desktop Safari 8.0.8会在<code>promise1</code>和<code>promise2</code>之前打印<code>setTimeout</code>。这真的很奇怪，
+因为Firefox 39和Safari 8.0.7的打印顺序是正确的。</p>
+<h2 id="这为什么会发生">这为什么会发生</h2>
+<p>在理解这些之前，你需要知道事件循环如何处理任务和微任务。</p>
+<p>每个<code>线程（thread）</code>拥有他们自己的<strong>事件循环</strong>，所以每个<code>web worker</code>同样拥有自己的事件循环，因此<code>web worker</code>能够独立的运行。
+而同一个源下的所有窗口共享一个事件循环，因此这些窗口能够同步的进行通信。</p>
+<p>事件循环不断的运行，它会执行任务队列里的所有任务。一个事件循环有多个任务源，事件循环会确保源内的任务的执行顺序（某些规范定义了自己的任务源，比如<a href="https://w3c.github.io/IndexedDB/#database-access-task-source" target="_blank" rel="noopener"><code>IndexedDB</code></a>）,
+但是在每次事件循环中由浏览器决定从哪个源中获取任务。这允许浏览器优先考虑性能敏感的任务，比如用户点击事件。</p>
+<p><strong>任务</strong>由浏览器进行安排，这有利于浏览器进入 <code>JavaScript/DOM</code> 域的内部确保这些任务有序的执行。在不同的任务执行之间，浏览器<em>可能</em>更新页面。
+从一个鼠标单击到单击事件的回调需要调度一个任务，解析HTML也是如此，在上面的示例中，<code>setTimeout</code>也需要调度任务。</p>
+<p><code>setTimeout</code>在一个给定的延时时间之后为它的回调函数调度一个新的任务。这就是<code>setTimeout</code>在<code>script end</code>之后打印的原因，打印<code>script end</code>是第一个任务的一部分，
+但是打印<code>setTimeout</code>是在另一个任务中。</p>
+<p><strong>Microtasks</strong>通常用于安排<strong>在当前执行的脚本完成之后</strong>要做的事情。比如对一系列动作做出响应，或者需要进行异步操作但不想负担生成一个新任务的性能损耗的情况。
+在每个任务结束后，并且没有JavaScript正在执行，微任务队列就会在回调后开始执行。在微任务排队期间新添加的微任务都会被添加到微任务队列的末尾并执行。
+<strong>微任务</strong>包括 <code>Mutation Observer</code> 回调，以及在上面的示例中的 <code>promise</code> 回调。</p>
+<p>每当一个承诺 <code>promise</code> 完成或者它已经完成，它就会为它的回调添加一个微任务。这可以保证即使承诺立即完成，它的回调也是异步的。所以在一个已完成的 <code>promise</code> 上调用 <code>.then(yey, nay)</code> 会立即向队列里加入一个微任务。
+这就是为什么 <code>promise1</code> 和 <code>promise2</code> 在 <code>script end</code> 之后打印出来，因为微任务队列必须在当前运行的脚本完成之后才会执行。同样的， <code>promise1</code> 和 <code>promise2</code> 在 <code>setTimeout</code> 之前打印是因为微任务总是在下一个任务之前被执行。</p>
+<p>下面是一个示例可以一步一步地进行调试。
+见<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">原文</a></p>
+<h3 id="不同地浏览器地行为有何不同？">不同地浏览器地行为有何不同？</h3>
+<p>某些浏览器执行上面的JavaScript的打印顺序是：<code>script start</code>，<code>script end</code>，<code>setTimeout</code>，<code>promise1</code>，<code>promise2</code>。这些浏览器运行 <code>promise</code> 回调在 <code>setTimeout</code> 之后。
+它们的行为就像将 <code>promise</code> 回调作为一个新任务的一部分而不是一个微任务。</p>
+<p>这是情有可原的，因为 <code>promise</code> 这个概念是来自 ECMAScript 而不是 HTML。ECMAScript 有一个类似于微任务的概念 &quot;jobs&quot; ，但是除了在<a href="https://esdiscuss.org/topic/the-initialization-steps-for-web-browsers#content-16" target="_blank" rel="noopener">邮件列表</a>中的讨论，它们的关系并不明确。
+然而，普遍的共识是 <code>promise</code> 应该属于微任务队列的一部分，这有充足的理由。</p>
+<p>将 <code>promise</code> 做为任务会导致性能问题，因为 <code>promise</code> 回调可能会因为于任务相关的事件被不必要的延迟，比如说页面渲染。它也会因为于其他任务源的相互作用而产生不确定性，而且还会破坏于其他API的交互。下面还有其他理由。</p>
+<p>Edge浏览器将 <code>promise</code> 的回调视为微任务，WebKit 也是如此，所以我认为 Safari 最后也会将 <code>promise</code> 的回调视为微任务，而且 Firefox 43 似乎已经修复了它的行为。</p>
+<h2 id="如何判断某些东西使用的是任务还是微任务">如何判断某些东西使用的是任务还是微任务</h2>
+<p>我们可以通过观察它打印的日志相对于<code>Promise</code>和<code>setTimeout</code>的日志在控制台打印的顺序来判断，但使用这种方法的前提是浏览器的实现正确。</p>
+<p>另一种方法是<strong>看文档</strong>，举个例子，<a href="https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps" target="_blank" rel="noopener"><code>setTimeout</code>的第14步</a>将其加入任务队列中，
+而<a href="https://dom.spec.whatwg.org/#queue-a-mutation-record" target="_blank" rel="noopener"><code>mutation record</code>排队的第5步</a>将其加入微任务队列中。</p>
+<p>如上所述，在 ECMAScript 规范中，微任务被称为 &quot;jobs&quot;，在<a href="https://www.ecma-international.org/ecma-262/6.0/#sec-performpromisethen" target="_blank" rel="noopener">PerformPromiseThen的第8步</a>中， <code>EnqueueJob</code> 被调用时会为一个微任务排队。</p>
+<p>下面是一个更复杂的例子</p>
+<p>在写这篇文章之前，我也搞不清楚这个，下面是一点html代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"outer"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"inner"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">给出下面的js代码，点击 `div.inner` 控制台会打印出什么？</span><br><span class="line"></span><br><span class="line">```javascript</span><br><span class="line">// 首先获取这些元素</span><br><span class="line">var outer = document.querySelector('.outer');</span><br><span class="line">var inner = document.querySelector('.inner');</span><br><span class="line"></span><br><span class="line">// 监听outer元素的属性改变的事件</span><br><span class="line">new MutationObserver(function() &#123;</span><br><span class="line">  console.log('mutate');</span><br><span class="line">&#125;).observe(outer, &#123;</span><br><span class="line">  attributes: true</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// 定义点击触发的方法</span><br><span class="line">function onClick() &#123;</span><br><span class="line">  console.log('click');</span><br><span class="line"></span><br><span class="line">  setTimeout(function() &#123;</span><br><span class="line">    console.log('timeout');</span><br><span class="line">  &#125;, 0);</span><br><span class="line"></span><br><span class="line">  Promise.resolve().then(function() &#123;</span><br><span class="line">    console.log('promise');</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  outer.setAttribute('data-random', Math.random());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 添加点击事件</span><br><span class="line">inner.addEventListener('click', onClick);</span><br><span class="line">outer.addEventListener('click', onClick);</span><br></pre></td></tr></table></figure>
+<p>现在给出你的答案</p>
+<p><strong>提示：log可以触发多次</strong></p>
+<p>示例见<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">原文</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试一下"><span class="toc-number">1.</span> <span class="toc-text">尝试一下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#这为什么会发生"><span class="toc-number">2.</span> <span class="toc-text">这为什么会发生</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#不同地浏览器地行为有何不同？"><span class="toc-number">2.1.</span> <span class="toc-text">不同地浏览器地行为有何不同？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何判断某些东西使用的是任务还是微任务"><span class="toc-number">3.</span> <span class="toc-text">如何判断某些东西使用的是任务还是微任务</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&text=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&is_video=false&description=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=宏任务，微任务，队列和schedules （翻译）&body=Check out this article: http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&title=宏任务，微任务，队列和schedules （翻译）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/&name=宏任务，微任务，队列和schedules （翻译）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 siaikin
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

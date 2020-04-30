@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="function CanvasDragDrop(obj) {   this.el = obj.el;   this.ctx = obj.ctx;   this.offset = obj.offset || { x: 0, y: 0 };    this.ddElMap = {};   this.ddElList = [];    this.ddEl = {};   this.mousePos =">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Siai Kin">
+<meta property="og:url" content="http://yoursite.com/2019/08/25/canvasDragDrop/index.html">
+<meta property="og:site_name" content="Siai Kin">
+<meta property="og:description" content="function CanvasDragDrop(obj) {   this.el = obj.el;   this.ctx = obj.ctx;   this.offset = obj.offset || { x: 0, y: 0 };    this.ddElMap = {};   this.ddElList = [];    this.ddEl = {};   this.mousePos =">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-04T08:12:09.259Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Siai Kin">
+<meta name="twitter:description" content="function CanvasDragDrop(obj) {   this.el = obj.el;   this.ctx = obj.ctx;   this.offset = obj.offset || { x: 0, y: 0 };    this.ddElMap = {};   this.ddElList = [];    this.ddEl = {};   this.mousePos =">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Siai Kin</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/09/02/宏任务，微任务，队列和schedules-（翻译）/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/08/25/canvas-drag/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/25/canvasDragDrop/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/25/canvasDragDrop/&text="><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/25/canvasDragDrop/&is_video=false&description="><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=&body=Check out this article: http://yoursite.com/2019/08/25/canvasDragDrop/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/25/canvasDragDrop/&name=&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Siai Kin</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-08-25T07:06:39.502Z" itemprop="datePublished">2019-08-25</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    function CanvasDragDrop(obj) {
+  this.el = obj.el;
+  this.ctx = obj.ctx;
+  this.offset = obj.offset || { x: 0, y: 0 };
+
+  this.ddElMap = {};
+  this.ddElList = [];
+
+  this.ddEl = {};
+  this.mousePos = {};
+  this.ddElTrack = undefined;
+  this.scaleRatio = {
+    x: 1,
+    y: 1
+  }
+  this.init();
+}
+
+Object.defineProperties(CanvasDragDrop.prototype, {
+  init: {
+    value: init
+  },
+  destory: {
+    value: destory
+  },
+  addDragDropElement: {
+    value: addDragDropElement
+  },
+  addTextElement: {
+    value: addTextElement
+  },
+  addImageElement: {
+    value: addImageElement
+  },
+  render: {
+    value: render
+  },
+  isSelectDDEl: {
+    value: isSelectDDEl
+  },
+  matchDDEl: {
+    value: matchDDEl
+  },
+  drawOutline: {
+    value: drawOutline
+  },
+  subscribe: {
+    value: subscribe
+  },
+  scaleDDEl: {
+    value: scaleDDEl
+  }
+});
+
+function init() {
+  if (!this.el.onmousedown)
+    this.el.onmousedown = mouseDown.bind(this);
+  if (!this.el.onmouseup)
+    this.el.onmouseup = mouseUp.bind(this);
+  if (!this.el.onmousemove)
+    this.el.onmousemove = mouseMove.bind(this);
+
+  const rect = this.el.getBoundingClientRect();
+  this.scaleRatio.x = this.el.width / rect.width;
+  this.scaleRatio.y = this.el.height / rect.height;
+}
+
+function destory() {
+  this.el.onmousedown = undefined;
+  this.el.onmouseup = undefined;
+  this.el.onmousemove = undefined;
+}
+
+function mouseDown(ev) {
+   this.mousePos = this.scaleDDEl({
+     x: ev.offsetX,
+     y: ev.offsetY
+   });
+
+   let matchIndex = this.matchDDEl(this.mousePos), matchEl = this.ddElList[matchIndex];
+   if (matchIndex !== -1) {
+     this.ddElList.splice(matchIndex, 1);
+     this.ddElList.unshift(matchEl);
+     this.ddEl = matchEl;
+   }
+}
+
+function mouseMove(ev) {
+  let mouseMovePos = this.scaleDDEl({
+    x: ev.offsetX,
+    y: ev.offsetY
+  });
+  if (this.isSelectDDEl()) {
+    let offsetPos = {
+      x: this.mousePos.x - mouseMovePos.x,
+      y: this.mousePos.y - mouseMovePos.y
+    };
+
+    this.ddEl.x -= offsetPos.x;
+    this.ddEl.y -= offsetPos.y;
+
+    this.render();
+    this.mousePos = mouseMovePos;
+    if (this.ddElTrack) {
+      this.ddElTrack.call(this, {
+        x: this.ddEl.x - this.offset.x,
+        y: this.ddEl.y - this.offset.y
+      });
+    }
+  } else {
+    let matchIndex = this.matchDDEl(mouseMovePos), matchEl = this.ddElList[matchIndex];
+    if (matchIndex !== -1) {
+      this.render();
+      this.drawOutline(matchEl);
+    }
+  }
+}
+
+function mouseUp(ev) {
+  this.ddEl = {};
+}
+
+function addDragDropElement(el, callback) {
+  let key = `${el.x}-${el.y}-${el.width}-${el.height}`;
+  el.id = key;
+  el.render = callback;
+  el.x += this.offset.x;
+  el.y += this.offset.y;
+
+  this.ddElMap[key] = el;
+  this.ddElList.unshift(el);
+
+  // 箭头函数无法绑定this，call，apply，bind的第一个参数会被忽略。
+  callback.call(this, this.ctx, el);
+}
+
+function addTextElement(el, callback) {
+  let ctx = this.ctx;
+
+  ctx.save();
+  el.type = 'text';
+  el.fontFamily = el.fontFamily || 'serif';
+  el.fontSize = el.fontSize || 14;
+  el.fontColor = el.fontColor || 'rgb(0, 0, 0)';
+  el.font = `${el.fontSize}px ${el.fontFamily}`;
+  el.textBaseline = 'top';
+
+  ctx.font = el.font;
+  el.width = el.width || ctx.measureText(el.text).width;
+  el.height = el.height || el.fontSize + 4;
+  ctx.restore();
+  this.addDragDropElement(el, callback);
+}
+
+function addImageElement(el, callback) {
+  let image = el.image;
+  el.type = 'image';
+
+  el.width = el.width || image.width;
+  el.height = el.height || image.height;
+  this.addDragDropElement(el, callback);
+}
+
+function render() {
+  this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+  for (let i = this.ddElList.length, el; i--;) {
+    el = this.ddElList[i];
+    el.render.call(this, this.ctx, el);
+  }
+}
+
+/**
+ * 判断是否鼠标点击选中了某个拖放元素
+ * @return {*|boolean}
+ */
+function isSelectDDEl() {
+  return this.ddEl !== undefined && this.ddEl.x !== undefined && this.ddEl.y !== undefined;
+}
+
+/**
+ * 匹配拖放元素
+ * @param mousePos
+ * @return {number}
+ */
+function matchDDEl(mousePos) {
+  for (let i = 0, len = this.ddElList.length, el; i < len; i++) {
+    el = this.ddElList[i];
+    if ((mousePos.x > el.x && mousePos.x < (el.x + el.width)) && (mousePos.y > el.y && mousePos.y < (el.y + el.height))) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function drawOutline(el) {
+  let ctx = this.ctx;
+  ctx.save();
+  ctx.strokeStyle = 'rgb(0, 0, 255)';
+  if (el.type === 'text') {
+    ctx.strokeRect(el.x, el.y, el.width, el.height);
+  } else {
+    ctx.strokeRect(el.x, el.y, el.width, el.height);
+  }
+  ctx.restore();
+}
+
+function subscribe(callback) {
+  this.ddElTrack = callback;
+}
+
+/**
+ * 缩放拖拽元素
+ */
+function scaleDDEl(el) {
+  if (el.x !== undefined) el.x *= this.scaleRatio.x;
+  if (el.y !== undefined) el.y *= this.scaleRatio.y;
+  if (el.width !== undefined) el.width *= this.scaleRatio.x;
+  if (el.height !== undefined) el.height *= this.scaleRatio.y;
+
+  return el;
+}
+export default CanvasDragDrop;
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/25/canvasDragDrop/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/25/canvasDragDrop/&text="><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/25/canvasDragDrop/&is_video=false&description="><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=&body=Check out this article: http://yoursite.com/2019/08/25/canvasDragDrop/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/25/canvasDragDrop/&title="><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/25/canvasDragDrop/&name=&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 siaikin
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Vue响应式原理 Vue实现的响应式系统是基于Object.definedProperty()（还有一个类似的方法Object.definedProperty()，可以同时定义多个属性）的。 Object.definedProperty()方法可以对一个对象中的属性定义set和get方法。  get方法在访问该属性时触发，返回值即访问该属性得到的值 set方法在修改该属性值时触发  Vue的实现方">
+<meta name="keywords" content="Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue响应式踩坑">
+<meta property="og:url" content="http://yoursite.com/2019/08/17/Vue响应式踩坑/index.html">
+<meta property="og:site_name" content="Siai Kin">
+<meta property="og:description" content="Vue响应式原理 Vue实现的响应式系统是基于Object.definedProperty()（还有一个类似的方法Object.definedProperty()，可以同时定义多个属性）的。 Object.definedProperty()方法可以对一个对象中的属性定义set和get方法。  get方法在访问该属性时触发，返回值即访问该属性得到的值 set方法在修改该属性值时触发  Vue的实现方">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-23T09:37:21.098Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue响应式踩坑">
+<meta name="twitter:description" content="Vue响应式原理 Vue实现的响应式系统是基于Object.definedProperty()（还有一个类似的方法Object.definedProperty()，可以同时定义多个属性）的。 Object.definedProperty()方法可以对一个对象中的属性定义set和get方法。  get方法在访问该属性时触发，返回值即访问该属性得到的值 set方法在修改该属性值时触发  Vue的实现方">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Vue响应式踩坑</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/08/25/canvas-drag/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/08/10/localStorage在IE和Chrome下的不同/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/17/Vue响应式踩坑/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&text=Vue响应式踩坑"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&is_video=false&description=Vue响应式踩坑"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Vue响应式踩坑&body=Check out this article: http://yoursite.com/2019/08/17/Vue响应式踩坑/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&name=Vue响应式踩坑&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">Vue响应式原理</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#关于getter-setter"><span class="toc-number">1.0.0.0.0.1.</span> <span class="toc-text">关于getter/setter</span></a></li></ol></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#vue用object-definedpropoty-实现响应式系统存在的问题"><span class="toc-number">1.0.1.</span> <span class="toc-text">Vue用Object.definedPropoty()实现响应式系统存在的问题</span></a></li>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Vue响应式踩坑
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Siai Kin</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-08-17T13:28:26.000Z" itemprop="datePublished">2019-08-17</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Vue/">Vue</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Vue/">Vue</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1>Vue响应式原理</h1>
+<p>Vue实现的响应式系统是基于<code>Object.definedProperty()</code>（还有一个类似的方法<code>Object.definedProperty()</code>，可以同时定义多个属性）的。</p>
+<p><code>Object.definedProperty()</code>方法可以对一个对象中的属性定义<code>set</code>和<code>get</code>方法。</p>
+<ol>
+<li><code>get</code>方法在访问该属性时触发，返回值即访问该属性得到的值</li>
+<li><code>set</code>方法在修改该属性值时触发</li>
+</ol>
+<p>Vue的实现方法是用<code>Object.definedProperty</code>将作为Vue中data选项的JavaScript对象里面定义的所有属性都<strong>转化</strong>为<code>getter/setter</code>。
+我们可以把它当作在原来的JS对象里定义的所有属性外面包了一层壳（是属性外面不是JS对象外面），这层壳可以监听到外部对对象属性的访问（get）和设置（set）。</p>
+<h6 id="关于getter-setter">关于<code>getter/setter</code></h6>
+<p>在mdn文档中对其的解释如下：</p>
+<blockquote>
+<p>一个<code>getter</code>是一个获取某个特定属性的值的方法。一个<code>setter</code>是一个设定某个属性的值的方法。
+你可以为预定义的或用户定义的对象定义<code>getter</code>和<code>setter</code>以支持新增的属性。
+定义<code>getter</code>和<code>setter</code>的语法采用对象字面量语法。</p>
+</blockquote>
+<p>需要注意的是，如果在一个对象里已经用<code>get</code>关键字定义了一个<code>getter</code>那么在同一个对象里就不能再出现同名的属性，
+同名的属性和<code>getter/setter</code>无法共存。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误写法</span></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  getterr: <span class="string">'getter'</span>,  <span class="comment">// 同名属性</span></span><br><span class="line">  <span class="keyword">get</span> getterr() &#123;     <span class="comment">// 同名getter</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'getter'</span>; </span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>从不能有同名的属性和<code>getter/setter</code>这个特性我们可以看出上文的<strong>转化</strong>这个词的必要性，当然这Vue文档中的原文。
+通过<strong>转化</strong>我们大致可以想象出Vue对响应式JS对象的处理过程。</p>
+<ol>
+<li>将data选项中的原始JS对象里面的所有属性重命名。将其转化为内部属性，比如<code>inner</code> -&gt; <code>_inner</code>。</li>
+<li>定义同属性名的<code>getter</code>和<code>setter</code>，因为之前的属性已经重命名了，所以这一步不会产生属性名的冲突。</li>
+</ol>
+<p>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对一个对象简单的转化</span></span><br><span class="line"><span class="comment">// 将inner属性转化为`getter/setter`</span></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  inner: <span class="literal">true</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> keys = <span class="built_in">Object</span>.keys(obj);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, len = keys.length; i &lt; len; i++) &#123;</span><br><span class="line">  <span class="keyword">let</span> v = obj[keys[i]];</span><br><span class="line">  obj[<span class="string">'_'</span> + keys[i]] = v;</span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, keys[i], &#123;</span><br><span class="line">    <span class="keyword">get</span>: () =&gt; &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>._inner;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>: (newV) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>._inner = newV;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="vue用object-definedpropoty-实现响应式系统存在的问题">Vue用<code>Object.definedPropoty()</code>实现响应式系统存在的问题</h3>
+<blockquote>
+<p><code>Object.definedPropoty()</code>方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。</p>
+</blockquote>
+<p>这个方法只能操作JS对象里的属性，对其修改或创建。同样的，我们也只能将其已定义的属性转化为上文提到的<code>getter/setter</code>。</p>
+<p>换句话说，我们只能观测已定义的属性的改变，无法观测到JS对象里是否添加或删除里某个属性。这一点也在Vue的文档中提到了。
+并且也给出了<a href="https://cn.vuejs.org/v2/guide/reactivity.html" target="_blank" rel="noopener">解决方案</a>。所以Vue也建议开发者将需要用到的属性预先定义在<code>data</code>选项中，
+即使是先将值定义为空。</p>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+console.log(Vue);
+</script>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-number">1.</span> <span class="toc-text">Vue响应式原理</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#关于getter-setter"><span class="toc-number">1.0.0.0.0.1.</span> <span class="toc-text">关于getter/setter</span></a></li></ol></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#vue用object-definedpropoty-实现响应式系统存在的问题"><span class="toc-number">1.0.1.</span> <span class="toc-text">Vue用Object.definedPropoty()实现响应式系统存在的问题</span></a></li>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/17/Vue响应式踩坑/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&text=Vue响应式踩坑"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&is_video=false&description=Vue响应式踩坑"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Vue响应式踩坑&body=Check out this article: http://yoursite.com/2019/08/17/Vue响应式踩坑/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&title=Vue响应式踩坑"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/17/Vue响应式踩坑/&name=Vue响应式踩坑&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2020 siaikin
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="https://github.com/siaikin">项目</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
