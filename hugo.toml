@@ -1,0 +1,64 @@
+baseURL = 'http://example.org/'
+languageCode = 'zh-cn'
+defaultContentLanguage = "zh-cn"
+title = "siaikin's Blog"
+theme = 'archie'
+hasCJKLanguage = true
+
+[markup]
+  [markup.highlight]
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ''
+    hl_inline = false
+    lineAnchors = ''
+    lineNoStart = 1
+    lineNos = true
+    lineNumbersInTable = false
+    noClasses = true
+    noHl = false
+    style = 'doom-one2'
+    tabWidth = 4
+
+[params]
+  mode = "toggle"
+
+# Social media links which shows up on site header.
+# Uses feather icons for icons. You can [search icon names from here](https://feathericons.com/).
+[[params.social]]
+name = "Github"
+icon = "github"
+url = "https://github.com/siaikin"
+
+[[params.social]]
+name = "Email"
+icon = "mail"
+url = "abc1310054026@outlook.com"
+
+[[params.social]]
+name = "RSS"
+icon = "rss"
+url = "/index.xml"
+
+# Main menu Items
+
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[menu.main]]
+name = "All posts"
+url = "/posts"
+weight = 2
+
+[[menu.main]]
+name = "About"
+url = "/about"
+weight = 3
+
+[[menu.main]]
+name = "Tags"
+url = "/tags"
+weight = 4
