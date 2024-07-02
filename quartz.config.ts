@@ -17,7 +17,7 @@ const config: QuartzConfig = {
       websiteId: "8ee18155-f395-4cb5-8d1c-a9f6c28fde97"
     },
     locale: "zh-CN",
-    baseUrl: "siakin-digit-dargen.netlify.app",
+    baseUrl: "siaikin.website",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
     theme: {

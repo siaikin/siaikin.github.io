@@ -8,6 +8,7 @@ export const sharedPageComponents: SharedLayout = {
   footer: Component.Footer({
     links: {
       GitHub: "https://github.com/siaikin",
+      '	浙ICP备2024107038号-1': 'https://beian.miit.gov.cn'
     },
   }),
 }
