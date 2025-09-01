@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/15759020/window-location-href-doesnt-redirect

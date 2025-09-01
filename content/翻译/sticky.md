@@ -1,0 +1,1 @@
+https://elad.medium.com/css-position-sticky-how-it-really-works-54cd01dc2d46
