@@ -25,6 +25,9 @@ export type Analytics =
       host?: string
       scriptSrc?: string
     }
+  | {
+      provider: "vercel"
+    }
 
 export interface GlobalConfiguration {
   pageTitle: string

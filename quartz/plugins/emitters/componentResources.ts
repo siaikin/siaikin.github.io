@@ -129,6 +129,22 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
         "https://${cfg.analytics.websiteId}.${cfg.analytics.host ?? "goatcounter.com"}/count")
       document.head.appendChild(goatcounterScript)
     `)
+  } else if (cfg.analytics?.provider === "vercel") {
+    /**
+     * <script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+     */
+    componentResources.beforeDOMLoaded.push(`
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    `)
+    componentResources.afterDOMLoaded.push(`
+      const vercelInsightsScript = document.createElement("script")
+      vercelInsightsScript.src = "/_vercel/insights/script.js"
+      vercelInsightsScript.defer = true
+      document.head.appendChild(vercelInsightsScript)
+    `)
   }
 
   if (cfg.enableSPA) {
