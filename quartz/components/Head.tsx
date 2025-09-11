@@ -45,11 +45,11 @@ export default (() => {
           .filter((resource) => resource.loadTime === "beforeDOMReady")
           .map((res) => JSResourceToScriptElement(res, true))}
 
-        // 百度网站验证
+        {/* 百度网站验证 */}
         <meta name="baidu-site-verification" content="codeva-PHJC0xQ6o9" />
-        // Bing 网站验证
+        {/* Bing 网站验证 */}
         <meta name="msvalidate.01" content="A65F47ECCE2699A945592C00E0AA5FD3" />
-        // google 网站验证
+        {/* google 网站验证 */}
         <meta name="google-site-verification" content="aqrWOyJqJ2-O35NCVZpIyZ79QFCXiBzSSpbK-EMmzZ4" />
       </head>
     )
