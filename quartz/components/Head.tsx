@@ -51,6 +51,8 @@ export default (() => {
         <meta name="msvalidate.01" content="A65F47ECCE2699A945592C00E0AA5FD3" />
         {/* google 网站验证 */}
         <meta name="google-site-verification" content="aqrWOyJqJ2-O35NCVZpIyZ79QFCXiBzSSpbK-EMmzZ4" />
+        {/* yandex 网站验证 */}
+        <meta name="yandex-verification" content="01b6540f9cb86a8e" />
       </head>
     )
   }
