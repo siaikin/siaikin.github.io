@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试嵌套 Shadow DOM 动画获取</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .test-element {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      margin: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .animate {
+      animation: spin 2s linear infinite, pulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.1);
+      }
+    }
+
+    button {
+      background: #007acc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .level {
+      margin: 10px 0;
+      padding: 10px;
+      border-left: 3px solid #007acc;
+      background: rgba(0, 122, 204, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>嵌套 Shadow DOM 动画获取测试</h1>
+    <p>这个测试页面用于验证 <code>getAnimations()</code> 方法是否能获取嵌套 Shadow DOM 中的动画。</p>
+
+    <div class="test-section">
+      <h2>测试结构</h2>
+      <div class="level">
+        <strong>主文档 (Document)</strong>
+        <div id="host-element" class="level">
+          <strong>Host Element</strong> - 包含 Shadow DOM
+          <div class="level">
+            <strong>Shadow Root 1</strong>
+            <div class="level">
+              <strong>嵌套的 Host Element</strong>
+              <div class="level">
+                <strong>Shadow Root 2 (嵌套)</strong> - 包含动画元素
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>控制面板</h2>
+      <button onclick="startAnimations()">开始所有动画</button>
+      <button onclick="stopAnimations()">停止所有动画</button>
+      <button onclick="testGetAnimations()">测试 getAnimations()</button>
+      <button onclick="clearResults()">清空结果</button>
+    </div>
+
+    <div class="test-section">
+      <h2>测试宿主元素</h2>
+      <div id="host-element"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>测试结果</h2>
+      <div id="results" class="results">点击"测试 getAnimations()"按钮开始测试...</div>
+    </div>
+  </div>
+
+  <script>
+    let hostElement;
+    let shadowRoot1;
+    let nestedHostElement;
+    let shadowRoot2;
+    let animatedElements = [];
+
+    // 创建嵌套的 Shadow DOM 结构
+    function createNestedShadowStructure() {
+      // 创建主 Host Element
+      hostElement = document.getElementById('host-element');
+
+      // 创建第一层 Shadow DOM
+      shadowRoot1 = hostElement.attachShadow({ mode: 'open' });
+      shadowRoot1.innerHTML = `
+                <style>
+                    .shadow-container {
+                        padding: 15px;
+                        border: 2px solid #ff6b6b;
+                        border-radius: 5px;
+                        background: rgba(255, 107, 107, 0.1);
+                        margin: 10px 0;
+                    }
+                    .shadow-element {
+                        width: 80px;
+                        height: 80px;
+                        background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+                        margin: 10px;
+                        border-radius: 8px;
+                        display: inline-block;
+                    }
+                    .animate-shadow1 {
+                        animation: bounce 1.5s ease-in-out infinite;
+                    }
+                    @keyframes bounce {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-20px); }
+                    }
+                </style>
+                <div class="shadow-container">
+                    <h3>Shadow Root 1</h3>
+                    <div class="shadow-element" id="shadow1-element1"></div>
+                    <div class="shadow-element" id="shadow1-element2"></div>
+                    <div id="nested-host"></div>
+                </div>
+            `;
+
+      // 创建嵌套的 Host Element
+      nestedHostElement = shadowRoot1.getElementById('nested-host');
+
+      // 创建第二层 Shadow DOM (嵌套)
+      shadowRoot2 = nestedHostElement.attachShadow({ mode: 'open' });
+      shadowRoot2.innerHTML = `
+                <style>
+                    .nested-shadow-container {
+                        padding: 15px;
+                        border: 2px solid #4ecdc4;
+                        border-radius: 5px;
+                        background: rgba(78, 205, 196, 0.1);
+                        margin: 10px 0;
+                    }
+                    .nested-shadow-element {
+                        width: 60px;
+                        height: 60px;
+                        background: linear-gradient(45deg, #4ecdc4, #44a08d);
+                        margin: 10px;
+                        border-radius: 50%;
+                        display: inline-block;
+                    }
+                    .animate-shadow2 {
+                        animation: wiggle 1s ease-in-out infinite, glow 2s ease-in-out infinite alternate;
+                    }
+                    @keyframes wiggle {
+                        0%, 100% { transform: rotate(0deg); }
+                        25% { transform: rotate(5deg); }
+                        75% { transform: rotate(-5deg); }
+                    }
+                    @keyframes glow {
+                        from { box-shadow: 0 0 5px #4ecdc4; }
+                        to { box-shadow: 0 0 20px #4ecdc4, 0 0 30px #4ecdc4; }
+                    }
+                </style>
+                <div class="nested-shadow-container">
+                    <h4>Shadow Root 2 (嵌套)</h4>
+                    <div class="nested-shadow-element" id="shadow2-element1"></div>
+                    <div class="nested-shadow-element" id="shadow2-element2"></div>
+                    <div class="nested-shadow-element" id="shadow2-element3"></div>
+                </div>
+            `;
+
+      // 存储动画元素的引用
+      animatedElements = [
+        shadowRoot1.getElementById('shadow1-element1'),
+        shadowRoot1.getElementById('shadow1-element2'),
+        shadowRoot2.getElementById('shadow2-element1'),
+        shadowRoot2.getElementById('shadow2-element2'),
+        shadowRoot2.getElementById('shadow2-element3')
+      ];
+    }
+
+    function startAnimations() {
+      // 添加动画类
+      shadowRoot1.getElementById('shadow1-element1').classList.add('animate-shadow1');
+      shadowRoot1.getElementById('shadow1-element2').classList.add('animate-shadow1');
+
+      shadowRoot2.getElementById('shadow2-element1').classList.add('animate-shadow2');
+      shadowRoot2.getElementById('shadow2-element2').classList.add('animate-shadow2');
+      shadowRoot2.getElementById('shadow2-element3').classList.add('animate-shadow2');
+
+      logResult('✅ 所有动画已开始');
+    }
+
+    function stopAnimations() {
+      // 移除动画类
+      shadowRoot1.getElementById('shadow1-element1').classList.remove('animate-shadow1');
+      shadowRoot1.getElementById('shadow1-element2').classList.remove('animate-shadow1');
+
+      shadowRoot2.getElementById('shadow2-element1').classList.remove('animate-shadow2');
+      shadowRoot2.getElementById('shadow2-element2').classList.remove('animate-shadow2');
+      shadowRoot2.getElementById('shadow2-element3').classList.remove('animate-shadow2');
+
+      logResult('⏹️ 所有动画已停止');
+    }
+
+    function testGetAnimations() {
+      logResult('🔍 开始测试 getAnimations() 方法...\n');
+
+      // 测试 1: 主文档的 getAnimations
+      try {
+        const documentAnimations = document.getAnimations();
+        logResult(`📄 Document.getAnimations(): ${documentAnimations.length} 个动画`);
+        documentAnimations.forEach((anim, index) => {
+          logResult(`   ${index + 1}. ${anim.animationName || anim.id || 'unnamed'} (${anim.effect?.target?.tagName || 'unknown'})`);
+        });
+      } catch (e) {
+        logResult(`❌ Document.getAnimations() 错误: ${e.message}`);
+      }
+
+      logResult('');
+
+      // 测试 2: Host Element 的 getAnimations
+      try {
+        const hostAnimations = hostElement.getAnimations();
+        logResult(`🏠 Host Element.getAnimations(): ${hostAnimations.length} 个动画`);
+
+        const hostAnimationsSubtree = hostElement.getAnimations({ subtree: true });
+        logResult(`🌳 Host Element.getAnimations({subtree: true}): ${hostAnimationsSubtree.length} 个动画`);
+        hostAnimationsSubtree.forEach((anim, index) => {
+          logResult(`   ${index + 1}. ${anim.animationName || anim.id || 'unnamed'} (${anim.effect?.target?.tagName || 'unknown'})`);
+        });
+      } catch (e) {
+        logResult(`❌ Host Element.getAnimations() 错误: ${e.message}`);
+      }
+
+      logResult('');
+
+      // 测试 3: Shadow Root 1 的 getAnimations
+      try {
+        const shadow1Animations = shadowRoot1.getAnimations();
+        logResult(`👻 Shadow Root 1.getAnimations(): ${shadow1Animations.length} 个动画`);
+        shadow1Animations.forEach((anim, index) => {
+          logResult(`   ${index + 1}. ${anim.animationName || anim.id || 'unnamed'} (${anim.effect?.target?.id || 'no-id'})`);
+        });
+      } catch (e) {
+        logResult(`❌ Shadow Root 1.getAnimations() 错误: ${e.message}`);
+      }
+
+      logResult('');
+
+      // 测试 4: Shadow Root 2 的 getAnimations
+      try {
+        const shadow2Animations = shadowRoot2.getAnimations();
+        logResult(`👻👻 Shadow Root 2.getAnimations(): ${shadow2Animations.length} 个动画`);
+        shadow2Animations.forEach((anim, index) => {
+          logResult(`   ${index + 1}. ${anim.animationName || anim.id || 'unnamed'} (${anim.effect?.target?.id || 'no-id'})`);
+        });
+      } catch (e) {
+        logResult(`❌ Shadow Root 2.getAnimations() 错误: ${e.message}`);
+      }
+
+      logResult('');
+
+      // 测试 5: 嵌套 Host Element 的 getAnimations
+      try {
+        const nestedHostAnimations = nestedHostElement.getAnimations();
+        logResult(`🏠🏠 Nested Host Element.getAnimations(): ${nestedHostAnimations.length} 个动画`);
+
+        const nestedHostAnimationsSubtree = nestedHostElement.getAnimations({ subtree: true });
+        logResult(`🌳🏠 Nested Host Element.getAnimations({subtree: true}): ${nestedHostAnimationsSubtree.length} 个动画`);
+        nestedHostAnimationsSubtree.forEach((anim, index) => {
+          logResult(`   ${index + 1}. ${anim.animationName || anim.id || 'unnamed'} (${anim.effect?.target?.id || 'no-id'})`);
+        });
+      } catch (e) {
+        logResult(`❌ Nested Host Element.getAnimations() 错误: ${e.message}`);
+      }
+
+      logResult('');
+      logResult('🎯 结论分析:');
+      logResult('- 如果 Shadow Root 1 只能获取到自己内部的动画，不能获取 Shadow Root 2 的动画');
+      logResult('- 如果 Host Element.getAnimations({subtree: true}) 不能获取 Shadow DOM 内的动画');
+      logResult('- 那么就证明 getAnimations() 不能穿透 Shadow DOM 边界');
+    }
+
+    function logResult(message) {
+      const results = document.getElementById('results');
+      results.textContent += message + '\n';
+      results.scrollTop = results.scrollHeight;
+    }
+
+    function clearResults() {
+      document.getElementById('results').textContent = '结果已清空...\n';
+    }
+
+    // 页面加载完成后创建嵌套结构
+    document.addEventListener('DOMContentLoaded', function () {
+      createNestedShadowStructure();
+      logResult('✅ 嵌套 Shadow DOM 结构已创建');
+      logResult('💡 提示: 先点击"开始所有动画"，然后点击"测试 getAnimations()"');
+    });
+  </script>
+</body>
+
+</html>
