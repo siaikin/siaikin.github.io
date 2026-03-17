@@ -1,0 +1,1 @@
+[smoothstep( pct-0.01, pct, st.y) - smoothstep( pct, pct+0.01, st.y) 的可视化](https://graphtoy.com/?f1(x,t)=smoothstep(0.5%20-%200.01,%200.5,%20x)&v1=true&f2(x,t)=smoothstep(0.5,%200.5%20+%200.01,%20x)&v2=true&f3(x,t)=f1(x,%20t)%20-%20f2(x,%20t)&v3=true&f4(x,t)=&v4=false&f5(x,t)=&v5=false&f6(x,t)=&v6=false&grid=1&coords=0.4766910095179103,0.9547202456018405,0.09256007565257256)
